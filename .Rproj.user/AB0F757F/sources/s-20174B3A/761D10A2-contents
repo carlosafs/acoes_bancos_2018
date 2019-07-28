@@ -1,0 +1,213 @@
+---
+title:  "DESEMPENHO DAS AÇÕES DE 3 BANCOS EM 2018"
+author: "Carlos Freitas"
+date: "27/07/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+<div style="text-align: justify">
+
+### 1. INTRODUÇÃO
+
+Os investidores em ações estão aumentando no Brasil, embora a caderneta de poupanças siga, de longe, como o produto preferido dos investidores. Essa escolha pela poupança se dá por diversos motivos, entre eles, o risco de investir em ações, a falta de conhecimento/informação além da própria cultura histórica de investimento. A condição econômica da população também é um fator importante. 
+
+> As ações são “títulos de propriedade que conferem a seus detentores (investidores) a participação na sociedade da empresa”. (Brasil, Bolsa, Balcão - **B3**).
+
+As ações se distinguem conforme a natureza dos direitos ou vantagens que concedem aos seus titulares, sendo elas ações ordinárias, preferenciais e de fruição.  A principal diferença entre as ações ordinárias e preferenciais é que as ordinárias dão ao seu possuidor privilégio de voto nas assembleias de acionistas e as preferenciais concedem o recebimento de dividendos em valor maior ao das ações ordinárias, no mínimo de 10%, e também a preferência no recebimento de reembolso do capital. Já sobre as ações de fruição, possui um dono, ficando a cargo de outra pessoa usufrui dos direitos (**BRASIL, 1976**).
+
+Os bancos entram em cena no mercado de ações como bons investimentos, pelo fato de serem empresas bem gerenciadas e que pagam bons proventos. Sendo assim, para entender o desempenho dessas ações durante o período de 2018, foram realizadas visualizações dos valores de ações de três dos maiores Bancos do País. 
+
+### 2. VISUALIZAÇÃO DOS DADOS
+
+Os dados, obtidos no site **Uol**, revelam o desempenho das ações do **Banco do Brasil**, **Itaú** e **Santander**, três dos maiores bancos do país. Juntos, lucraram em média, **50 bilhões de reais em 2018**. 
+
+A ideia é mostrar como essas ações se comportaram durante o ano, revelando suas altas e baixas.
+
+#### 2.1. OS TRÊS BANCOS
+
+> “No Brasil, a média dos investidores compra ações entre meio e fim de um movimento em alta, amarga o prejuízo e vende em baixa”. (Willian Eid Júnior, Coordenador do Centro de estudos e Finanças da Fundação Getúlio Vargas).
+
+```{r, include = FALSE}
+library(flexdashboard)
+
+library(plotly)
+library(ggplot2)
+library(magrittr)
+
+#ITAU 2018
+itaub3 <- read.csv("itau_on_itub3.csv", sep = ";", h = T, dec = ",")
+itaub4 <- read.csv("itau_pn_itub4.csv", sep = ";", h = T, dec = ",")
+
+#SANTANDER 2018
+sanb11 <- read.csv("santander_sanb11_unt_2018.csv", sep = ";", h = T, dec = ",")
+sanb3 <- read.csv("santander_sanb3_2018.csv", sep = ";", h = T, dec = ",")
+sanb4 <- read.csv("santander_sanb4_2018.csv", sep = ";", h = T, dec = ",")
+
+#BANCO DO BRASIL 2018
+brasilb3 <- read.csv("Banco_Brasil_on_2018.csv", sep = ";", h = T, dec = ",")
+
+#DOLAR 2018
+dolar <- read.csv("dolar_2018.csv", sep = ";", h = T, dec = ",")
+
+
+#Tratamento dos dados
+itaub3$Preço <- as.character(itaub3$Preço)
+itaub3$Preço <- as.numeric(itaub3$Preço)
+itaub3$Data <- as.character(itaub3$Data)
+itaub3[,11] <- as.Date(itaub3[,11], format = "%d/%m/%Y")
+
+itaub4$Preço <- as.character(itaub4$Preço)
+itaub4$Preço <- as.numeric(itaub4$Preço)
+itaub4$Data <- as.character(itaub4$Data)
+itaub4[,11] <- as.Date(itaub4[,11], format = "%d/%m/%Y")
+
+sanb11$Preço <- as.character(sanb11$Preço)
+sanb11$Preço <- as.numeric(sanb11$Preço)
+sanb11$Data <- as.character(sanb11$Data)
+sanb11[,11] <- as.Date(sanb11[,11], format = "%d/%m/%Y")
+
+sanb3$Preço <- as.character(sanb3$Preço)
+sanb3$Preço <- as.numeric(sanb3$Preço)
+sanb3$Data <- as.character(sanb3$Data)
+sanb3[,11] <- as.Date(sanb3[,11], format = "%d/%m/%Y")
+
+sanb4$Preço <- as.character(sanb4$Preço)
+sanb4$Preço <- as.numeric(sanb4$Preço)
+sanb4$Data <- as.character(sanb4$Data)
+sanb4[,11] <- as.Date(sanb4[,11], format = "%d/%m/%Y")
+
+brasilb3$Preço <- as.character(brasilb3$Preço)
+brasilb3$Preço <- as.numeric(brasilb3$Preço)
+brasilb3$Data <- as.character(brasilb3$Data)
+brasilb3[,11] <- as.Date(brasilb3[,11], format = "%d/%m/%Y")
+
+dolar$Máximo <- as.character(dolar$Máximo)
+dolar$Máximo <- as.numeric(dolar$Máximo)
+dolar$Data <- as.character(dolar$Data)
+dolar[,8] <- as.Date(dolar[,8], format = "%d/%m/%Y")
+dolar$Máximo <- dolar$Máximo / 10
+dolar$Mínimo <- as.character(dolar$Mínimo)
+dolar$Mínimo <- as.numeric(dolar$Mínimo)
+dolar$Mínimo <- dolar$Mínimo / 10
+dolar$Variação.perc. <- as.character(dolar$Variação.perc.)
+dolar$Variação.perc. <- as.numeric(dolar$Variação.perc.)
+```
+
+```{r, fig.width = 9.4, fig.height = 3}
+vertical <- list(title = "AÇÃO/COTAÇÃO (R$)")
+horizontal <- list(title = "ANO 2018")
+
+plot_ly(data = itaub3, name = "ITAÚ ON",
+        x = ~itaub3$Data, y = ~itaub3$Preço, 
+        type = "scatter", mode = 'lines') %>%
+  add_trace(data = brasilb3, name = "BB ON",
+            x = ~brasilb3$Data, y = ~brasilb3$Preço, 
+            type = "scatter", mode = 'lines') %>%
+  add_trace(data = sanb3, name = "SANTANDER ON",
+            x = ~sanb3$Data, y = ~sanb3$Preço, 
+            type = "scatter", mode = 'lines') %>%
+  add_trace(data = dolar, name = "DOLAR",
+            x = ~dolar$Data, y = ~dolar$Máximo, 
+            type = "scatter", mode = 'lines') %>%
+  layout(title = "VALORES DAS AÇÕES DOS BANCOS ITAÚ, SANTANDER E BB EM 2018",
+         xaxis = horizontal, yaxis = vertical)
+```
+<font size="1"> **GRÁFICO 1**. FONTE: UOL ECONOMIA </font>
+
+
+É interessante notar que os três bancos caminharam em sintonia entre eles, a respeito da variação de preços durante o ano. Nota-se uma queda significativa no mês de junho, ocorrida na época, pela percepção de risco com o quadro macroeconômico e pela incerteza com o cenário político-eleitoral no país.
+
+> “Os bancos costumam ser os papéis que mais rapidamente capturam o risco macroeconômico”.  (Igor Lima, sócio da gestora Galt Capital).
+
+No cenário internacional, o Banco Central Europeu (BCE), teria sinalizado que os juros deveriam permanecer inalterados até pelo menos o terceiro trimestre de 2019. Nos Estados Unidos, a indicação de aceleração do crescimento econômico no segundo trimestre. Enquanto isso, o Brasil passava por incertezas elevadas no panorama político-eleitoral e sobre o ritmo de sua economia.
+
+Mais na frente, em novembro, houve uma queda considerável nas ações do banco Itaú. Mas o que aconteceu foi apenas desdobramentos das ações, onde o banco aumentou a quantidade das ações sem mexer no lado do capital da empresa.  O valor muito elevado de uma ação atrapalha na liquidez, sendo essa a possível explicação para essa tomada de decisão do Itaú. Ninguém perdeu dinheiro, apenas diminuiu o valor das ações e aumentou a quantidade delas na carteira.
+
+A cotação do dólar também foi mostrada no gráfico 1 durante o período. É importante visualizar o salto de R$ 3.3 no início do ano para R$ 3.9 no final, passando por um pico de R$ 4.2.   
+
+#### 2.2. OS TIPOS DE AÇÕES
+
+Os Tipos de ações de cada banco:
+
+Itaú Unibanco:
+
+* **ITUB3.SA – ON**;
+* **ITUB4.SA – PN**;
+
+Santander BR:
+
+* **SANB11.SA – UNT**;
+* **SANB3.SA – ON**;
+* **SANB4.SA – PN**;
+
+Banco do Brasil:
+ 
+* **BBAS3.SA – ON**;
+
+```{r, fig.width = 9.4, fig.height = 2}
+
+plot_ly(data = itaub4, name = "ITAÚ PN", 
+            x = ~itaub4$Data, y = ~itaub4$Preço, 
+            type = "scatter", mode = 'lines') %>%
+  add_trace(data = itaub3, name = "ITAÚ ON",
+        x = ~itaub3$Data, y = ~itaub3$Preço, 
+        type = "scatter", mode = 'lines') %>%
+  layout(title = "VALORES DAS AÇÕES DO BANCO ITAÚ EM 2018",
+         xaxis = horizontal, yaxis = vertical)
+```
+<font size="1"> **GRÁFICO 2**. FONTE: UOL ECONOMIA </font>
+
+```{r, fig.width = 9.4, fig.height = 2}
+plot_ly(data = sanb11, name = "SANTANDER UNT",
+        x = ~sanb11$Data, y = ~sanb11$Preço, 
+        type = "scatter", mode = 'lines') %>%
+  layout(title = "VALORES DAS AÇÕES DO BANCO SANTANDER EM 2018",
+         xaxis = horizontal, yaxis = vertical) %>%
+  add_trace(data = sanb3, name = "SANTANDER ON",
+            x = ~sanb3$Data, y = ~sanb3$Preço, 
+            type = "scatter", mode = 'lines') %>%
+  add_trace(data = sanb4, name = "SANTANDER PN",
+            x = ~sanb4$Data, y = ~sanb4$Preço, 
+            type = "scatter", mode = 'lines')
+```
+<font size="1"> **GRÁFICO 3**. FONTE: UOL ECONOMIA </font>
+
+
+Como o Banco do Brasil tem apenas um tipo de investimento por ações, foi utilizado, para comparação, o que continha a sigla ON de cada banco. Essa escolha não ocasionou conflito de entendimento, já que as ações de tipologia diferente de cada banco têm desempenhos similares entre elas, como visto nos gráficos 2 e 3.
+
+#### 2.3. ARRECADAÇÕES 2018.
+
+Com arrecadação em média de 50 bilhões de reais, esses bancos mostram que, apesar dos problemas econômicos do país, eles seguem muito bem no mercado. O Itaú, com arrecadação próxima da metade desse valor, é o mais bem alinhado. Porém, como visto no gráfico 1, em relação as ações, o Banco do Brasil teve melhor performance nesse intervalo de tempo.
+
+
+```{r,fig.width = 9.5, fig.height = 3}
+banco <- c("BANCO DO BRASIL", "ITAÚ UNIBANCO", "SANTANDER BR")
+lucro <- c(12.862, 24.972, 12.166)
+total <- data.frame(banco, lucro)
+
+plot_ly(labels = ~total$banco, 
+        values = ~total$lucro, 
+        textposition = "inside",
+        textinfo = "percent+value",
+        insidetextfont = list(color = "white")) %>%
+  add_pie(hole = 0.75) %>%
+  layout(title = "PORCENTAGEM DOS LUCROS EM 2018 (R$ 50 BILHÕES)")
+```
+<font size="1"> **GRÁFICO 4**. FONTE: UOL ECONOMIA </font>
+
+
+### 3. REFERÊNCIAS
+
+3.1. BRASIL. Lei 6.404 de 15 de dezembro de 1976. **Dispõe sobre as Sociedade por Ações**. BRIGHAM, Eugene F.; Ehrhardt, Michael C. Financial Management: Theory & Practice: Cengage Learning, 2012.
+
+3.2. BOLSA DE VALORES, MERCADORIAS E FUTUROS DE SÃO PAULO (BM&FBovespa). **Perfil dos Investidores**. Disponível em:  http://www.bmfbovespa.com.br/pt_br/produtos/listados-a-vista-e-derivativos/renda-variavel/acoes.htm. Acesso em: 27/07/2019.
+
+3.3. EID JÚNIOR, William. **Risco nas Aplicações Financeiras e os Fundos de Investimento**. 2017.
+
+3.4. SANTOS, Bruno U. S. ; NORILLER, Rafael M.; LOPES, Antônio C. V.; RODE, Manfredo. **Análise de Investimento no Setor Financeiro da B3**. Revista da Universidade Vale do Rio Verde | v. 17| n. 1 | jan./jul. 2019 | p. 12
+
+<div/>

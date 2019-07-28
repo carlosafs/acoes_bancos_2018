@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1564324036139.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4191079862",
+    "id" : "761D10A2",
+    "lastKnownWriteTime" : 1564322491,
+    "last_content_update" : 1564322491,
+    "path" : "~/CURSOS_DATA_SCIENCE/Cursos_Importantes/Graficos/acoes_bancos_2018/artigo_acoes_bancos_2018.Rmd",
+    "project_path" : "artigo_acoes_bancos_2018.Rmd",
+    "properties" : {
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
